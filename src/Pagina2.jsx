@@ -2,8 +2,6 @@ import { Box, Button } from '@mui/material';
 
 
 const Pagina2 = () => {
-const publicKey= 'BPEVoHDejQ2uzRBOeQsGX2g9opmlWUrICJldmcaqjXDu166iQigeN-osyFGlGpNZmZp4d0cqdX22-Z_YOY7JGTY'
-
 navigator.serviceWorker.register('sw_2.js');
 
 const registrar = async () => {
@@ -37,7 +35,6 @@ return (
   <Box >
     <form>
       <Button onClick={() => registrar()}>Clique para se registrar e receber notificações!</Button>
-
     </form>
   </Box>
   );

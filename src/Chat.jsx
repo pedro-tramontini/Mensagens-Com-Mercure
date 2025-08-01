@@ -1,11 +1,12 @@
-import { Avatar, ChatContainer, Conversation, ConversationHeader, ConversationList, MainContainer, Message, MessageInput, MessageList, Sidebar, TypingIndicator } from '@chatscope/chat-ui-kit-react';
+import { Avatar, ChatContainer, Conversation, ConversationHeader, ConversationList, ExpansionPanel, MainContainer, Message, MessageInput, MessageList, Search, Sidebar, TypingIndicator } from '@chatscope/chat-ui-kit-react';
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.css';
 import { useEffect, useState } from 'react';
 import { useMercure } from './contexts/MercureContext';
 
 const Chat = () => {
 
-const [mensagens, setMensagens] = useState([
+    // json onde estão as mensagens
+    const [mensagens, setMensagens] = useState([
         {
             id_mensagem: '1',
             id_enviado: '1',
@@ -15,111 +16,11 @@ const [mensagens, setMensagens] = useState([
             sentTime: '2023-03-15T12:00:00.000Z',
             direction: 'incoming',
             tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '2',
-            id_enviado: '1',
-            id_recebido: '2',
-            message: 'Today?',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:05:00.000Z',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '3',
-            id_enviado: '1',
-            id_recebido: '2',
-            message: 'Hello??',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:10:00.000Z',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '4',
-            id_enviado: '1',
-            id_recebido: '2',
-            message: 'Como vai voce?',
-            sender: 'Jhon',
-            sentTime: '2023-03-15 12:15:00.000',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '5',
-            id_enviado: '1',
-            id_recebido: '2',
-            message: 'Very Good',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:20:00.000Z',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '6',
-            id_enviado: '2',
-            id_recebido: '2',
-            message: 'Very Good',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:25:00.000Z',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '7',
-            id_enviado: '2',
-            id_recebido: '2',
-            message: 'Very Good',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:30:00.000Z',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '8',
-            id_enviado: '4',
-            id_recebido: '2',
-            message: 'Very Good',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:35:00.000Z',
-            direction: 'incoming',
-            tipo: 'text',
-            status: 'true'
-        },
-        {
-            id_mensagem: '9',
-            id_enviado: '1',
-            id_recebido: '2',
-            message: 'Very Good',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:35:00.000Z',
-            direction: 'incoming',
-            tipo: 'image',
-            src: 'https://media.istockphoto.com/id/133835367/pt/foto/fogo-alphabets-t.jpg?s=1024x1024&w=is&k=20&c=AO0Tid_EKvZNXkNtSHSxiBvcNECBYuAcfwC-AC7XCCA=',
-            status: 'true'
-        },
-        {
-            id_mensagem: '10',
-            id_enviado: '2',
-            id_recebido: '2',
-            message: 'Very Good',
-            sender: 'Jhon',
-            sentTime: '2023-03-15T12:35:00.000Z',
-            direction: 'outgoing',
-            tipo: 'image',
-            src: 'https://media.istockphoto.com/id/133835367/pt/foto/fogo-alphabets-t.jpg?s=1024x1024&w=is&k=20&c=AO0Tid_EKvZNXkNtSHSxiBvcNECBYuAcfwC-AC7XCCA=',
-            status: 'true'
+            status_lido: 'true'
         },
     ])
 
+    // json com a lista de contatos
     const [contatos, setContatos] = useState([
         {
             id: '1',
@@ -159,41 +60,44 @@ const [mensagens, setMensagens] = useState([
         {
             id: 'me',
             name: 'Meu Contato',
-            src: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz-2MVGTaluJdhDzyMMpwrhv2AVw3NfnDLbw&s'
+            src: 'https://wallpapers.com/images/hd/profile-picture-xj8jigxkai9jag4g.jpg'
         }
     ])
 
-    const [selecionado, setSelecionado] = useState(null)
+    const [contatoSelecionado, setContatoSelecionado] = useState(null)
 
-    const setarLido = (id) => {
-    setSelecionado(id)
+    // Função para setar que a mensagem foi lida
+    const setarLido = (idContato) => {
+        
+        setHandleSideBar(idContato === contatoSelecionado && false)
+        setContatoSelecionado(idContato)
+        setMensagens(prevMensagens => 
+            prevMensagens.map(mensagem => 
+                idContato === mensagem.id_enviado 
+                    ? { ...mensagem, status_lido: 'true' }
+                    : mensagem
+                )
+            );
+        };
 
-    setMensagens(prevMensagens => 
-        prevMensagens.map(mensagem => 
-            id === mensagem.id_enviado 
-                ? { ...mensagem, status: 'true' }
-                : mensagem
-            )
-        );
+
+    const sendMessage = (message, contatoSelecionado) => {
+    const uuid = crypto.randomUUID();
+
+        setMensagens([...mensagens, {
+            id_mensagem: uuid,
+            id_enviado: contatoSelecionado,
+            id_recebido: contatoSelecionado,
+            message: message,
+            sender: 'me',
+            sentTime: '2023-03-15T12:35:00.000Z',
+            direction: 'outgoing',
+            tipo: 'text',
+            src: '',
+            status_lido: 'true'
+        }])
+        console.log(mensagens)
     };
-
-//     const sendMessage = ({message, selecionado}) => {
-//     const uuid = crypto.randomUUID();
-
-//         setMensagens([...mensagens, {
-//             id_mensagem: uuid,
-//             id_enviado: '1',
-//             id_recebido: conteudoMercure.id_recebido,
-//             message: conteudoMercure.message,
-//             sender: conteudoMercure.sender,
-//             sentTime: conteudoMercure.sentTime,
-//             direction: conteudoMercure.direction,
-//             tipo: conteudoMercure.tipo,
-//             src: conteudoMercure.src,
-//             status: conteudoMercure.status
-//         }])
-//     );
-// };
     
     const {conteudoMercure}  = useMercure()
 
@@ -214,95 +118,145 @@ const [mensagens, setMensagens] = useState([
             direction: conteudoMercure.direction,
             tipo: conteudoMercure.tipo,
             src: conteudoMercure.src,
-            status: conteudoMercure.status
+            status_lido: conteudoMercure.status_lido
         }])
 
         setMensagens(prevMensagens => 
         prevMensagens.map(mensagem => 
-            selecionado === mensagem.id_enviado 
-                ? { ...mensagem, status: 'true' }
+            contatoSelecionado === mensagem.id_enviado 
+                ? { ...mensagem, status_lido: 'true' }
                 : mensagem
             )
         );
 
     }, [conteudoMercure])
 
-    return (
-       <div>
-    
-    
+    const [search, setSearch] = useState('')
+    console.log(search)
+
+    const [handleSideBar, setHandleSideBar] = useState(false)
+
+    const abrirSideBar = (id) => {
+        if (id === contatoSelecionado) {
+            setHandleSideBar(!handleSideBar)
+        } else {
+            setHandleSideBar(false)
+        }
+    }
+
+return (    //Aqui começa o jsx
+
+<div>
   <MainContainer style={{height: '100vh'}}>
     <Sidebar position='left' style={{overflow: 'hidden'}}>
-        <ConversationList>
 
-            {contatos.map((elemento) => {
-                const mensagensNaoLidas = mensagens.filter((e) => e.id_enviado === elemento.id && e.status === 'false').length
-                console.log(mensagensNaoLidas) 
+        <Search
+            placeholder="Search..."
+            onChange={(e) => setSearch(e)}
+            value={search}
+            onClearClick={() => setSearch("")}
+        />
+        <ConversationList >
+            {contatos.filter((item) => {
+                return search.toLowerCase() === '' ? item : item.name.toLowerCase().includes(search) || item.name.includes(search) 
+            }).map(({id, name, src}) => {
 
-                if (elemento.id === selecionado) {
+                const mensagensNaoLidas = mensagens.filter(({id_enviado, status_lido}) => id_enviado === id && status_lido === 'false').length
+
+                if (id === contatoSelecionado) {
                     return (
-                    <Conversation key={elemento.id} name={elemento.name} lastSenderName={elemento.name} info='hello' active>
-                        <Avatar src={elemento.src} status='available'/>
+                    <Conversation key={id} name={name} lastSenderName={name} info='hello' active onClick={() => setHandleSideBar(id === contatoSelecionado && false)}>
+                        <Avatar src={src} status='available'/>
                     </Conversation>
                     )
                 } else {
                     return (
-                    <Conversation key={elemento.id} name={elemento.name} lastSenderName={elemento.name} info='hello' unreadCnt={mensagensNaoLidas > 9 ? '9+' : mensagensNaoLidas} onClick={() => setarLido(elemento.id)} >
-                        <Avatar src={elemento.src} status='available'/>
+                    <Conversation key={id} name={name} lastSenderName={name} info='hello' unreadCnt={mensagensNaoLidas > 9 ? '9+' : mensagensNaoLidas} onClick={() => setarLido(id)} >
+                        <Avatar src={src} status='available'/>
                     </Conversation>
                     )
                 }
-            })}
+            }
+        )}
         </ConversationList>
     </Sidebar>
-    <ChatContainer>
 
-    {contatos.map((elemento) => (selecionado === elemento.id && (
-        <ConversationHeader>
-            <Avatar src={elemento.src} status='dnd'/>
-            <ConversationHeader.Content key={elemento.id} userName={elemento.name} info='last activer 10 min. ago'></ConversationHeader.Content>
-        </ConversationHeader>
-        ))
-    )}
+    <ChatContainer>
+        {contatos.map(({id, name, src}) => (contatoSelecionado === id && (
+            <ConversationHeader onClick={() => abrirSideBar(id)}>
+                <Avatar src={src} status='dnd'/>
+                <ConversationHeader.Content key={id} userName={name} info='last activer 10 min. ago'></ConversationHeader.Content>
+            </ConversationHeader>
+            ))
+        )}
         
         <MessageList>
-            {mensagens.map((e) => (e.id_enviado === selecionado && (
-                e.tipo === 'text' ? (
-                <Message key={e.id_mensagem} style={{width: '50%'}} type={e.type} model={{
-                    message: e.message,
-                    sender: e.sender,
-                    sentTime: e.sentTime,
-                    direction: e.direction,
-                }
-            } avatarSpacer >
+            {mensagens.map(({id_enviado, id_mensagem, message, sender, sentTime, direction, tipo, src, type}) => (id_enviado === contatoSelecionado && (
+                tipo === 'text' ? (
+                    <Message key={id_mensagem} style={{width: '50%'}} type={type} model={{
+                        message: message,
+                        sender: sender,
+                        sentTime: sentTime,
+                        direction: direction, 
+                    }
+                } avatarSpacer >
+                    <Message.Footer>{sentTime}</Message.Footer>
                 </Message>
+                
                 ) :
-                e.tipo === 'image' && (
-                <Message key={e.id_mensagem} model={{direction: e.direction, message: e.message}} avatarSpacer>
-                    {/* <Message.ImageContent src={e.src} alt="ERRO NA MENSAGEM" width={200}/> */}
+                tipo === 'image' && (
+                <Message key={id_mensagem} model={{direction: direction, message: message}} avatarSpacer>
                     <Message.CustomContent>
                     <div style={{display: 'flex', flexDirection: 'column'}}>
                         <img
-                            src={e.src}
+                            src={src}
                             alt='Erro na imagem'
-                            width={200}
-                            style={{borderRadius: 8}} 
+                            style={{width: '330px', height: '186.63px', borderRadius: 8}}
                             />
-                        <span style={{marginTop: 6, fontSize: '0.85rem', color: 'black'}}>
-                            {e.message}
+                        <span style={{marginTop: 6, fontSize: '0.85rem', color: 'black'}} >
+                            {message}
                         </span>
                     </div>
                     </Message.CustomContent>
+                    <Message.Footer>{sentTime}</Message.Footer>
                 </Message>
                 )
             ))
         )}
 
         </MessageList>
-        <MessageInput placeholder='Type your message here...' onSend={(e) => sendMessage({e, selecionado})}>
-
+        
+    {contatoSelecionado !== null && (
+        <MessageInput placeholder='Type your message here...' onSend={(e) => sendMessage(e, contatoSelecionado)}>
         </MessageInput>
+    )}
+
     </ChatContainer>
+
+    {handleSideBar === true && (
+        <Sidebar position="right">
+            <ExpansionPanel
+            open
+            title="INFO"
+            >
+                <p>
+                    Lorem ipsum
+                </p>
+                <p>
+                    Lorem ipsum
+                </p>
+                <p>
+                    Lorem ipsum
+                </p>
+                <p>
+                    Lorem ipsum
+                </p>
+            </ExpansionPanel>
+        </Sidebar>
+
+     )
+
+}
     
   </MainContainer>
 </div>
